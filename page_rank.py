@@ -1,4 +1,7 @@
 
+
+# this pgm give you page ranks when you give i/p as a file with page links and its neibours list as array
+
 #import sparkContect
 from pyspark import SparkContext
 
@@ -35,10 +38,12 @@ ranks=links3.map(lambda(page,neig):(page,1))
 
 #now loop for 10 times or more
 for x in range (10):
+
     #join links with ranks
     #new o/p rdd will be (p1,([p3,p4],1)
     #now make it flatmap using computeContribs  take values,rank of rdd and pass to func & o/p (p3,0.5)(p4,0.5)
 	contribs=links.join(ranks).flatmap(lambda(page,(neig,rank)):computeContribs(neig,ranks))
+
     #reduce that rdd by key and now make some calculations of  value
     ranks=contribs.reduceByKey(lambda v1,v2:v1+v2)).map(lambda (page,contrib):(page,contrib*0.85+0.15))
 
